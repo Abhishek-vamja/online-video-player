@@ -15,11 +15,9 @@ Follow these steps to set up and run the Online Video Player:
 
 ### Step 1: Clone the Repository
     
-    ```bash
     git clone https://github.com/Abhishek-vamja/online-video-player.git
     cd online-video-player
 
 ### Step 2: Clone the Repository
 
-    ```bash
     docker-compose up --build
