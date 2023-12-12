@@ -44,7 +44,7 @@ Ensure you have the following prerequisites installed:
 8. **Clone Project:**
 
     ```bash
-    git clone https://github.com/Abhishek-vamja/Fruits-Shop.git
+    git clone https://github.com/Abhishek-vamja/online-video-player.git
 
 9. **Install All Requirements:**
 
