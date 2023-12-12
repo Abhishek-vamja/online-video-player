@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load static %}
+
+<div class="tm-hero d-flex justify-content-center align-items-center" id="tm-video-container">
+    <video autoplay muted loop id="tm-video">
+        <source src="{% static 'video/hero.mp4' %}" type="video/mp4">
+    </video>
+    <i id="tm-video-control-button" class="fas fa-pause"></i>
+    <form class="d-flex position-absolute tm-search-form" method="get" action="{% url 'search' %}">
+        <input class="form-control tm-search-input" name="q" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success tm-search-btn" type="submit">
+            <i class="fas fa-search"></i>
+        </button>
+    </form>
+</div>
+
+<div class="container-fluid tm-container-content tm-mt-60">
+    <div class="row mb-4">
+        <h2 class="col-6 tm-text-primary">
+            {{category}}
+        </h2>
+        <div class="col-6 d-flex justify-content-end align-items-center">
+            <form action="" class="tm-text-primary">
+                Page <input type="text" value="{{ product.number }}" size="1" class="tm-input-paging tm-text-primary"> of {{ product.paginator.num_pages }}
+            </form>
+        </div>
+    </div>
+    <hr>
+    <div class="row tm-mb-90 tm-gallery">
+        {% for i in product %}
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
+            <samp>{{forloop.counter}}. {{i.title}}</samp>
+            <figure class="effect-ming tm-video-item">
+                <img src="{{i.image.url}}" alt="Image" class="img-fluid">
+                <figcaption class="d-flex align-items-center justify-content-center">
+                    <h2>{{i.category.title}}</h2>
+                    <a href="{% url 'single-video' i.category.slug i.slug %}">View more</a>
+                </figcaption>
+            </figure>
+            <div class="d-flex justify-content-between tm-text-gray">
+                <span>{{i.created_at}}</span>
+                <span>10,460 views</span>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="row tm-mb-90">
+            <div class="col-12 d-flex justify-content-between align-items-center tm-paging-col">
+                {% if product.has_previous %}
+                <a href="?page={{ product.previous_page_number }}" class="btn btn-primary tm-btn-prev mb-2">Previous</a>
+                {% else %}
+                <a href="javascript:void(0);" class="btn btn-primary tm-btn-prev mb-2 disabled">Previous</a>
+                {% endif %}
+
+                <samp>Page {{ product.number }}</samp>
+
+                {% if product.has_next %}
+                <a href="?page={{ product.next_page_number }}" class="btn btn-primary tm-btn-next">Next</a>
+                {% else %}
+                <a href="javascript:void(0);" class="btn btn-primary tm-btn-next disabled">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </div> <!-- container-fluid, tm-container-content -->
+
+    {% endblock body %}
+    {% block js %}
+    <script>
+        $(function () {
+            /************** Video background *********/
+
+            function setVideoSize() {
+                const vidWidth = 1280;
+                const vidHeight = 720;
+                const maxVidHeight = 400;
+                let windowWidth = window.innerWidth;
+                let newVidWidth = windowWidth;
+                let newVidHeight = windowWidth * vidHeight / vidWidth;
+                let marginLeft = 0;
+                let marginTop = 0;
+
+                if (newVidHeight < maxVidHeight) {
+                    newVidHeight = maxVidHeight;
+                    newVidWidth = newVidHeight * vidWidth / vidHeight;
+                }
+
+                if (newVidWidth > windowWidth) {
+                    marginLeft = -((newVidWidth - windowWidth) / 2);
+                }
+
+                if (newVidHeight > maxVidHeight) {
+                    marginTop = -((newVidHeight - $('#tm-video-container').height()) / 2);
+                }
+
+                const tmVideo = $('#tm-video');
+
+                tmVideo.css('width', newVidWidth);
+                tmVideo.css('height', newVidHeight);
+                tmVideo.css('margin-left', marginLeft);
+                tmVideo.css('margin-top', marginTop);
+            }
+
+            setVideoSize();
+
+            // Set video background size based on window size
+            let timeout;
+            window.onresize = function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(setVideoSize, 100);
+            };
+
+            // Play/Pause button for video background      
+            const btn = $("#tm-video-control-button");
+
+            btn.on("click", function (e) {
+                const video = document.getElementById("tm-video");
+                $(this).removeClass();
+
+                if (video.paused) {
+                    video.play();
+                    $(this).addClass("fas fa-pause");
+                } else {
+                    video.pause();
+                    $(this).addClass("fas fa-play");
+                }
+            });
+        });
+    </script>
+    {% endblock js %}
